@@ -1,3 +1,8 @@
+// Set public DNS resolvers first — fixes ISP DNS failing to resolve
+// MongoDB Atlas SRV records (_mongodb._tcp.cluster0.*.mongodb.net)
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
 require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/db');
