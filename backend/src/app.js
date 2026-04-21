@@ -12,9 +12,25 @@ const reportRoutes = require('./routes/reports');
 
 const app = express();
 
-// Middleware
+// ── CORS ────────────────────────────────────────────────────────────────────
+// In production: only allow the deployed frontend URL.
+// In development: allow all origins for convenience.
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())
+  : true; // true = allow all in dev
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options('/{*splat}', cors(corsOptions)); // Handle preflight for all routes (Express 5 syntax)
+
+// ── Core middleware ──────────────────────────────────────────────────────────
 app.use(helmet());
-app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
