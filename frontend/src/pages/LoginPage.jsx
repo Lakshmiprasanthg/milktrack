@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigate, Link } from 'react-router-dom';
+
 import toast from 'react-hot-toast';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
@@ -19,9 +21,28 @@ const GoogleIcon = () => (
 );
 
 export const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await authApi.login({ email, password });
+      login(response.data.data);
+      toast.success(`Welcome back, ${response.data.data.admin.name}!`);
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -58,6 +79,53 @@ export const LoginPage = () => {
             </p>
           </div>
 
+          {/* Email Login Form */}
+          <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5 ml-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                required
+                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--text)] focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5 ml-1">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--text)] focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all active:scale-[0.98] disabled:opacity-60"
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--border)]"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[var(--card)] px-2 text-[var(--text-muted)]">Or continue with</span>
+            </div>
+          </div>
+
           {/* Google button */}
           <button
             id="google-signin-btn"
@@ -71,8 +139,15 @@ export const LoginPage = () => {
             ) : (
               <GoogleIcon />
             )}
-            <span>{loading ? 'Signing in…' : 'Continue with Google'}</span>
+            <span>Continue with Google</span>
           </button>
+
+          <p className="mt-8 text-center text-sm text-[var(--text-muted)]">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+              Register here
+            </Link>
+          </p>
 
           <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
             By signing in you agree to the terms of use.
