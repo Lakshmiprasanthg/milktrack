@@ -5,8 +5,6 @@ import { customerApi } from '../api/client';
 import { MainLayout } from '../layouts/MainLayout';
 import { Card, Button, Input, Modal, Table, LoadingScreen } from '../components/UI';
 
-const getCustomerCode = (customer) => customer.cdNumber || `CD-${customer._id.slice(-4).toUpperCase()}`;
-
 export const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
@@ -14,6 +12,7 @@ export const CustomersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
+    cdNumber: '',
     name: '',
     phone: '',
     address: '',
@@ -39,7 +38,7 @@ export const CustomersPage = () => {
     if (customer) {
       setEditingId(customer._id);
       setFormData({
-        cdNumber: getCustomerCode(customer),
+        cdNumber: customer.cdNumber || '',
         name: customer.name,
         phone: customer.phone,
         address: customer.address,
@@ -113,7 +112,7 @@ export const CustomersPage = () => {
         </div>
         <Table
           columns={[
-            { key: 'cdNumber', label: 'CD Number', render: (_, row) => getCustomerCode(row) },
+            { key: 'cdNumber', label: 'CD Number', render: (code) => code || 'Not Set' },
             {
               key: 'name',
               label: 'Name',
