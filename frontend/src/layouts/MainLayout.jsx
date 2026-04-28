@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/UI';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: '📊', isActive: (path) => path === '/' || path === '/dashboard' },
+  { to: '/', label: 'Home', icon: '🏠', isActive: (path) => path === '/' || path === '/dashboard' },
   { to: '/customers', label: 'Customers', icon: '👥', isActive: (path) => path.startsWith('/customers') },
   { to: '/deliveries', label: 'Deliveries', icon: '🚚', isActive: (path) => path.startsWith('/deliveries') },
   { to: '/reports', label: 'Reports', icon: '📄', isActive: (path) => path.startsWith('/reports') },
@@ -114,22 +114,22 @@ export const MainLayout = ({ children }) => {
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col pb-20 lg:pb-0">
-          <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div className="flex min-w-0 flex-1 flex-col pb-24 sm:pb-20 lg:pb-0">
+          <main className="relative z-10 mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
             {children}
           </main>
           
-          <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around border-t border-[var(--border)] bg-[var(--bg)] px-2 py-2 lg:hidden">
+          <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around border-t border-[var(--border)] bg-[var(--bg)] px-1 py-1 lg:hidden">
             {navItems.map((item) => {
               const active = item.isActive(location.pathname);
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`flex flex-col items-center gap-1 p-2 text-xs ${active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] text-xs sm:text-sm font-semibold transition-colors ${active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
                 >
-                  <span className="text-lg">{item.icon}</span>
-                  {item.label}
+                  <span className="text-lg sm:text-xl">{item.icon}</span>
+                  <span className="truncate">{item.label}</span>
                 </Link>
               );
             })}

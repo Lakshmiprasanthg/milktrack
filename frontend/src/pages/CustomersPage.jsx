@@ -5,6 +5,8 @@ import { customerApi } from '../api/client';
 import { MainLayout } from '../layouts/MainLayout';
 import { Card, Button, Input, Modal, Table, LoadingScreen } from '../components/UI';
 
+const getCustomerCode = (customer) => customer.cdNumber || `CD-${customer._id.slice(-4).toUpperCase()}`;
+
 export const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
@@ -36,10 +38,16 @@ export const CustomersPage = () => {
   const handleOpenModal = (customer = null) => {
     if (customer) {
       setEditingId(customer._id);
-      setFormData(customer);
+      setFormData({
+        cdNumber: getCustomerCode(customer),
+        name: customer.name,
+        phone: customer.phone,
+        address: customer.address,
+        pricePerLitre: customer.pricePerLitre,
+      });
     } else {
       setEditingId(null);
-      setFormData({ name: '', phone: '', address: '', pricePerLitre: '' });
+      setFormData({ cdNumber: '', name: '', phone: '', address: '', pricePerLitre: '' });
     }
     setIsModalOpen(true);
   };
@@ -105,6 +113,7 @@ export const CustomersPage = () => {
         </div>
         <Table
           columns={[
+            { key: 'cdNumber', label: 'CD Number', render: (_, row) => getCustomerCode(row) },
             {
               key: 'name',
               label: 'Name',
@@ -146,16 +155,23 @@ export const CustomersPage = () => {
         title={editingId ? 'Edit Customer' : 'Add New Customer'}
         footer={
           <>
-            <Button onClick={handleCloseModal} variant="secondary">
+            <Button onClick={handleCloseModal} variant="secondary" className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button onClick={handleSubmit} variant="primary">
+            <Button onClick={handleSubmit} variant="primary" className="w-full sm:w-auto">
               {editingId ? 'Update' : 'Create'}
             </Button>
           </>
         }
       >
         <form className="grid gap-4 sm:grid-cols-2">
+          <Input
+            label="CD Number"
+            placeholder="CD-1001"
+            value={formData.cdNumber}
+            onChange={(e) => setFormData({ ...formData, cdNumber: e.target.value })}
+            required
+          />
           <Input
             label="Name"
             placeholder="Customer name"

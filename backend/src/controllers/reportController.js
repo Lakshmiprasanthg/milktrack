@@ -232,6 +232,7 @@ const getCustomerReport = async (req, res, next) => {
       data: {
         customer: {
           _id: customer._id,
+          cdNumber: customer.cdNumber,
           name: customer.name,
           phone: customer.phone,
           address: customer.address,

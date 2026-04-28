@@ -141,6 +141,7 @@ export const CustomerProfilePage = () => {
 
         {/* Customer meta chips */}
         <div className="mt-3 flex flex-wrap gap-2">
+          <span className="chip chip-info text-xs">🪪 CD {customer?.cdNumber ?? `CD-${id.slice(-4).toUpperCase()}`}</span>
           {customer?.phone && (
             <span className="chip chip-ghost text-xs">📞 {customer.phone}</span>
           )}

@@ -28,30 +28,35 @@ const seedDatabase = async () => {
     // Create sample customers
     const customers = await Customer.insertMany([
       {
+        cdNumber: 'CD-1001',
         name: 'Rajesh Kumar',
         phone: '+91-9876543210',
         address: '123 Main Street, Delhi',
         pricePerLitre: 80,
       },
       {
+        cdNumber: 'CD-1002',
         name: 'Priya Singh',
         phone: '+91-9876543211',
         address: '456 Park Avenue, Delhi',
         pricePerLitre: 85,
       },
       {
+        cdNumber: 'CD-1003',
         name: 'Amit Patel',
         phone: '+91-9876543212',
         address: '789 Market Road, Delhi',
         pricePerLitre: 75,
       },
       {
+        cdNumber: 'CD-1004',
         name: 'Neha Sharma',
         phone: '+91-9876543213',
         address: '321 Garden Lane, Delhi',
         pricePerLitre: 90,
       },
       {
+        cdNumber: 'CD-1005',
         name: 'Vijay Reddy',
         phone: '+91-9876543214',
         address: '654 Lake View, Delhi',

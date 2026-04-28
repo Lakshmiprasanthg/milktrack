@@ -1,5 +1,5 @@
 export const Card = ({ children, className = '' }) => (
-  <div className={`frost-card rounded-[1.5rem] p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_28px_70px_rgba(15,23,42,0.12)] md:p-7 ${className}`}>
+  <div className={`frost-card rounded-[1.5rem] p-4 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_28px_70px_rgba(15,23,42,0.12)] md:p-7 ${className}`}>
     {children}
   </div>
 );
@@ -47,15 +47,15 @@ export const Input = ({
   className = '',
   ...props
 }) => (
-  <div className="flex flex-col gap-2">
-    {label && <label className="text-sm font-semibold tracking-wide text-slate-700">{label}</label>}
+  <div className="flex flex-col gap-1.5 sm:gap-2">
+    {label && <label className="text-xs sm:text-sm font-semibold tracking-wide text-slate-700">{label}</label>}
     <input
       type={type}
       placeholder={placeholder}
       className={`input-surface ${error ? 'border-rose-400/70' : ''} ${className}`}
       {...props}
     />
-    {error && <p className="text-rose-600 text-sm">{error}</p>}
+    {error && <p className="text-rose-600 text-xs sm:text-sm">{error}</p>}
   </div>
 );
 
@@ -69,25 +69,29 @@ export const Modal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-2 sm:px-4 pb-0 sm:pb-0">
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-2 pb-[5.5rem] sm:items-center sm:px-4 sm:pb-4">
       <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="glass-panel-strong relative w-full max-w-xl overflow-hidden rounded-t-[1.75rem] sm:rounded-[1.75rem] max-h-[92vh] flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 shrink-0">
-          <div>
-            <p className="section-label mb-1">Workspace</p>
-            <h2 className="text-lg sm:text-xl font-semibold text-slate-900">{title}</h2>
+      <div className="glass-panel-strong relative flex max-h-[calc(100vh-6rem)] w-full max-w-xl flex-col overflow-hidden rounded-t-[1.75rem] sm:max-h-[92vh] sm:rounded-[1.75rem]">
+        <div className="shrink-0 border-b border-slate-200 px-5 py-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="section-label mb-1">Workspace</p>
+              <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">{title}</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="button-ghost h-10 w-10 shrink-0 rounded-full text-xl text-slate-700 hover:text-slate-900"
+            >
+              ×
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="button-ghost h-10 w-10 rounded-full text-xl text-slate-700 hover:text-slate-900"
-          >
-            ×
-          </button>
         </div>
-        <div className="p-5 overflow-y-auto">{children}</div>
+        <div className="min-h-0 overflow-y-auto px-5 py-4 sm:px-6">{children}</div>
         {footer && (
-          <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 px-5 py-4 shrink-0">
-            {footer}
+          <div className="shrink-0 border-t border-slate-200 px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:py-4">
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              {footer}
+            </div>
           </div>
         )}
       </div>

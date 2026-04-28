@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema(
   {
+    cdNumber: {
+      type: String,
+      required: [true, 'CD number is required'],
+      trim: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: [true, 'Name is required'],

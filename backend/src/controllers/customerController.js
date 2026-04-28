@@ -34,9 +34,10 @@ const getCustomerById = async (req, res, next) => {
 
 const createCustomer = async (req, res, next) => {
   try {
-    const { name, phone, address, pricePerLitre } = req.body;
+    const { cdNumber, name, phone, address, pricePerLitre } = req.body;
 
     const customer = new Customer({
+      cdNumber,
       name,
       phone,
       address,
@@ -57,11 +58,11 @@ const createCustomer = async (req, res, next) => {
 const updateCustomer = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, phone, address, pricePerLitre } = req.body;
+    const { cdNumber, name, phone, address, pricePerLitre } = req.body;
 
     const customer = await Customer.findByIdAndUpdate(
       id,
-      { name, phone, address, pricePerLitre },
+      { cdNumber, name, phone, address, pricePerLitre },
       { new: true, runValidators: true }
     );
 

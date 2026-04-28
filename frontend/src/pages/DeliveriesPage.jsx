@@ -172,10 +172,10 @@ export const DeliveriesPage = () => {
         title={editingId ? 'Edit Delivery' : 'Add New Delivery'}
         footer={
           <>
-            <Button onClick={handleCloseModal} variant="secondary">
+            <Button onClick={handleCloseModal} variant="secondary" className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button onClick={handleSubmit} variant="primary">
+            <Button onClick={handleSubmit} variant="primary" className="w-full sm:w-auto">
               {editingId ? 'Update' : 'Create'}
             </Button>
           </>

@@ -170,7 +170,8 @@ a {
 	border: 1px solid rgba(30, 41, 59, 0.12);
 	background: rgba(255, 255, 255, 0.95);
 	color: var(--text-strong);
-	padding: 0.9rem 1rem;
+	padding: 0.85rem 0.9rem;
+	font-size: 16px;
 	transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
@@ -1068,6 +1069,12 @@ a {
 	textarea {
 		font-size: 16px !important;
 	}
+
+	/* Force hide sidebar on mobile */
+	aside.milk-sidebar {
+		display: none !important;
+		transform: translateX(-104%) !important;
+	}
 }
 
 /* Minimum touch-target for all interactive elements */
@@ -1076,12 +1083,22 @@ a,
 [role="button"] {
 	-webkit-tap-highlight-color: transparent;
 	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 button:not(.chip):not(.milk-active-dot):not(.sidebar-overlay),
 [role="button"]:not(.chip) {
-	min-height: 44px;
-	min-width: 44px;
+	min-height: 48px;
+	min-width: 48px;
+}
+
+@media (max-width: 640px) {
+	button:not(.chip):not(.milk-active-dot):not(.sidebar-overlay),
+	[role="button"]:not(.chip) {
+		min-height: 52px;
+		min-width: 52px;
+	}
 }
 
 /* Scrollbar thinner on mobile */
@@ -1168,6 +1185,7 @@ button:not(.chip):not(.milk-active-dot):not(.sidebar-overlay),
 	.table-shell th,
 	.table-shell tr {
 		display: block;
+		width: 100%;
 	}
 
 	.table-shell thead {
@@ -1175,11 +1193,11 @@ button:not(.chip):not(.milk-active-dot):not(.sidebar-overlay),
 	}
 
 	.table-shell tbody tr {
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.875rem;
 		border-radius: 1.1rem;
 		border: 1px solid var(--border);
 		background: rgba(255,255,255,0.96);
-		padding: 0.5rem 0;
+		padding: 0.75rem 0;
 		box-shadow: 0 2px 8px rgba(30,41,59,0.06);
 	}
 
@@ -1187,28 +1205,30 @@ button:not(.chip):not(.milk-active-dot):not(.sidebar-overlay),
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.6rem 1rem;
+		padding: 0.75rem 1rem;
 		font-size: 0.875rem;
 		border-top: 1px solid var(--border);
+		gap: 1rem;
 	}
 
 	.table-shell tbody td:first-child {
 		border-top: none;
-		padding-top: 0.75rem;
+		padding-top: 1rem;
 	}
 
 	.table-shell tbody td:last-child {
-		padding-bottom: 0.75rem;
+		border-bottom: none;
+		padding-bottom: 1rem;
 	}
 
 	.table-shell tbody td::before {
 		content: attr(data-label);
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.16em;
+		flex: 0 0 auto;
+		font-weight: 600;
 		color: var(--text-muted);
-		font-weight: 700;
-		margin-right: 0.5rem;
-		flex-shrink: 0;
+		text-transform: uppercase;
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		min-width: 80px;
 	}
 }
