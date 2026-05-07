@@ -9,6 +9,14 @@ const getMonthlySummary = async (req, res, next) => {
   try {
     const { month, customerId } = req.query;
 
+    if (customerId) {
+      const customer = await Customer.findOne({ _id: customerId, owner: req.admin._id });
+      if (!customer) {
+        res.status(404);
+        return next(new Error('Customer not found'));
+      }
+    }
+
     const monthRange = getMonthRange(month);
     const { summaries, totals, daysInMonth } = await buildMonthlySummary({
       start: monthRange.start,
@@ -16,6 +24,7 @@ const getMonthlySummary = async (req, res, next) => {
       year: monthRange.year,
       month: monthRange.month,
       customerId: customerId || null,
+      ownerId: req.admin._id,
     });
 
     res.status(200).json({
@@ -42,6 +51,11 @@ const generateCustomerBillPdfReport = async (req, res, next) => {
       return next(new Error('Customer not found'));
     }
 
+    if (!customer.owner.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
+    }
+
     const monthRange = getMonthRange(month);
     const { summaries } = await buildMonthlySummary({
       start: monthRange.start,
@@ -49,6 +63,7 @@ const generateCustomerBillPdfReport = async (req, res, next) => {
       year: monthRange.year,
       month: monthRange.month,
       customerId,
+      ownerId: req.admin._id,
     });
 
     if (summaries.length === 0) {
@@ -80,6 +95,7 @@ const generateMonthlyReportCsv = async (req, res, next) => {
       end: monthRange.end,
       year: monthRange.year,
       month: monthRange.month,
+      ownerId: req.admin._id,
     });
 
     const csvData = summaries.map((s) => ({
@@ -94,21 +110,6 @@ const generateMonthlyReportCsv = async (req, res, next) => {
     }));
 
     const displayMonth = `${monthRange.year}-${String(monthRange.month).padStart(2, '0')}`;
-    const csvWriter = createObjectCsvWriter({
-      path: null, // Will write to response instead
-      header: [
-        { id: 'CustomerName', title: 'Customer Name' },
-        { id: 'Phone', title: 'Phone' },
-        { id: 'Address', title: 'Address' },
-        { id: 'PricePerLitre', title: 'Price Per Litre' },
-        { id: 'TotalLitres', title: 'Total Litres' },
-        { id: 'DeliveryDays', title: 'Delivery Days' },
-        { id: 'NonDeliveryDays', title: 'Non-Delivery Days' },
-        { id: 'TotalAmount', title: 'Total Amount' },
-      ],
-      encoding: 'utf8',
-    });
-
     // Convert records to CSV string manually
     const headers = ['Customer Name', 'Phone', 'Address', 'Price Per Litre', 'Total Litres', 'Delivery Days', 'Non-Delivery Days', 'Total Amount'];
     const csvLines = [headers.join(',')];
@@ -153,6 +154,11 @@ const getCustomerReport = async (req, res, next) => {
     if (!customer) {
       res.status(404);
       return next(new Error('Customer not found'));
+    }
+
+    if (!customer.owner.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
     }
 
     const monthRange = getMonthRange(month);

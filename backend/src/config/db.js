@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Customer = require('../models/Customer');
 
 const connectDB = async () => {
   const mongoUri = process.env.MONGO_URI;
@@ -15,6 +16,13 @@ const connectDB = async () => {
 
   try {
     await mongoose.connect(mongoUri, baseOptions);
+
+    try {
+      await Customer.syncIndexes();
+    } catch (indexError) {
+      console.warn('Customer index sync skipped:', indexError.message);
+    }
+
     return;
   } catch (error) {
     const isSrvDnsIssue =
@@ -28,6 +36,12 @@ const connectDB = async () => {
 
     console.warn('Primary SRV Mongo URI failed. Retrying with MONGO_URI_DIRECT...');
     await mongoose.connect(directMongoUri, baseOptions);
+
+    try {
+      await Customer.syncIndexes();
+    } catch (indexError) {
+      console.warn('Customer index sync skipped:', indexError.message);
+    }
   }
 };
 

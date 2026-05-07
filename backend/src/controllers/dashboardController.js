@@ -5,10 +5,14 @@ const { buildMonthlySummary } = require('../utils/billing');
 
 const getDashboardStats = async (req, res, next) => {
   try {
-    const totalCustomers = await Customer.countDocuments();
+    const ownedCustomers = await Customer.find({ owner: req.admin._id }).select('_id');
+    const ownedCustomerIds = ownedCustomers.map((customer) => customer._id);
+
+    const totalCustomers = ownedCustomerIds.length;
 
     const { start, end } = getTodayRange();
     const todaysDeliveries = await Delivery.find({
+      customerId: { $in: ownedCustomerIds },
       date: { $gte: start, $lt: end },
       delivered: true,
     }).populate('customerId', 'name phone pricePerLitre');
@@ -28,6 +32,7 @@ const getDashboardStats = async (req, res, next) => {
       end: currentMonth.end,
       year: currentMonth.year,
       month: currentMonth.month,
+      ownerId: req.admin._id,
     });
 
     res.status(200).json({
@@ -50,7 +55,11 @@ const getTodayDeliveries = async (req, res, next) => {
   try {
     const { start, end } = getTodayRange();
 
+    const ownedCustomers = await Customer.find({ owner: req.admin._id }).select('_id');
+    const ownedCustomerIds = ownedCustomers.map((customer) => customer._id);
+
     const deliveries = await Delivery.find({
+      customerId: { $in: ownedCustomerIds },
       date: { $gte: start, $lt: end },
     })
       .populate('customerId', 'name phone pricePerLitre')

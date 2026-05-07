@@ -2,15 +2,28 @@ const Customer = require('../models/Customer');
 const Delivery = require('../models/Delivery');
 const { getDaysInMonth } = require('./date');
 
-const buildMonthlySummary = async ({ start, end, year, month, customerId = null }) => {
-  const customerFilter = customerId ? { _id: customerId } : {};
+const buildMonthlySummary = async ({ start, end, year, month, customerId = null, ownerId = null }) => {
+  const customerFilter = {};
+
+  if (customerId) {
+    customerFilter._id = customerId;
+  }
+
+  if (ownerId) {
+    customerFilter.owner = ownerId;
+  }
+
   const customers = await Customer.find(customerFilter).sort({ name: 1 });
+
+  const customerIds = customers.map((customer) => customer._id);
 
   const deliveryFilter = {
     date: { $gte: start, $lt: end },
   };
 
-  if (customerId) {
+  if (customerIds.length > 0) {
+    deliveryFilter.customerId = { $in: customerIds };
+  } else if (customerId) {
     deliveryFilter.customerId = customerId;
   }
 

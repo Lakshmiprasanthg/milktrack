@@ -1,13 +1,28 @@
 const Delivery = require('../models/Delivery');
+const Customer = require('../models/Customer');
 const { normalizeDate } = require('../utils/date');
+
+const getOwnedCustomerIds = async (adminId) => {
+  const customers = await Customer.find({ owner: adminId }).select('_id');
+  return customers.map((customer) => customer._id);
+};
 
 const getDeliveries = async (req, res, next) => {
   try {
     const { customerId, startDate, endDate } = req.query;
+    const ownedCustomerIds = await getOwnedCustomerIds(req.admin._id);
 
     const filter = {};
 
+    if (ownedCustomerIds.length > 0) {
+      filter.customerId = { $in: ownedCustomerIds };
+    }
+
     if (customerId) {
+      if (!ownedCustomerIds.some((ownedId) => String(ownedId) === String(customerId))) {
+        res.status(403);
+        return next(new Error('Forbidden'));
+      }
       filter.customerId = customerId;
     }
 
@@ -42,11 +57,16 @@ const getDeliveryById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const delivery = await Delivery.findById(id).populate('customerId');
+    const delivery = await Delivery.findById(id).populate('customerId', 'owner name phone pricePerLitre');
 
     if (!delivery) {
       res.status(404);
       return next(new Error('Delivery not found'));
+    }
+
+    if (!delivery.customerId?.owner?.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
     }
 
     res.status(200).json({
@@ -61,6 +81,12 @@ const getDeliveryById = async (req, res, next) => {
 const createDelivery = async (req, res, next) => {
   try {
     const { customerId, date, quantity, delivered } = req.body;
+    const ownedCustomerIds = await getOwnedCustomerIds(req.admin._id);
+
+    if (!ownedCustomerIds.some((ownedId) => String(ownedId) === String(customerId))) {
+      res.status(403);
+      return next(new Error('Forbidden'));
+    }
 
     const normalizedDate = normalizeDate(date);
 
@@ -103,11 +129,16 @@ const updateDelivery = async (req, res, next) => {
       id,
       { quantity, delivered },
       { new: true, runValidators: true }
-    ).populate('customerId', 'name phone pricePerLitre');
+    ).populate('customerId', 'name phone pricePerLitre owner');
 
     if (!delivery) {
       res.status(404);
       return next(new Error('Delivery not found'));
+    }
+
+    if (!delivery.customerId?.owner?.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
     }
 
     res.status(200).json({
@@ -130,6 +161,12 @@ const toggleDeliveryStatus = async (req, res, next) => {
       return next(new Error('Delivery not found'));
     }
 
+    const populatedDelivery = await delivery.populate('customerId', 'owner');
+    if (!populatedDelivery.customerId?.owner?.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
+    }
+
     delivery.delivered = !delivery.delivered;
     await delivery.save();
     await delivery.populate('customerId', 'name phone pricePerLitre');
@@ -147,12 +184,19 @@ const deleteDelivery = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const delivery = await Delivery.findByIdAndDelete(id);
+    const delivery = await Delivery.findById(id).populate('customerId', 'owner');
 
     if (!delivery) {
       res.status(404);
       return next(new Error('Delivery not found'));
     }
+
+    if (!delivery.customerId?.owner?.equals(req.admin._id)) {
+      res.status(403);
+      return next(new Error('Forbidden'));
+    }
+
+    await delivery.deleteOne();
 
     res.status(200).json({
       success: true,

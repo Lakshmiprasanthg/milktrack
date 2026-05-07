@@ -12,6 +12,7 @@ export const RegisterPage = () => {
     password: '',
     confirmPassword: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -89,23 +90,33 @@ export const RegisterPage = () => {
                 <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5 ml-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  minLength={6}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--text)] focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--text)] focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--text-muted)]"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5 ml-1">
                   Confirm
                 </label>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--text)] focus:ring-2 focus:ring-blue-500 outline-none transition-all"

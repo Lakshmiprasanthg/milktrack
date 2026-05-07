@@ -2,11 +2,15 @@ const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema(
   {
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+      required: [true, 'Owner (admin) is required'],
+    },
     cdNumber: {
       type: String,
       required: [true, 'CD number is required'],
       trim: true,
-      unique: true,
     },
     name: {
       type: String,
@@ -31,5 +35,7 @@ const customerSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+customerSchema.index({ owner: 1, cdNumber: 1 }, { unique: true });
 
 module.exports = mongoose.model('Customer', customerSchema);

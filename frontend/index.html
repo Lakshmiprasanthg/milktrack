@@ -11,6 +11,28 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <script>
+    (function(){
+      if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+        try {
+          // Unregister any existing service workers (helps stale cache on mobile)
+          navigator.serviceWorker.getRegistrations().then(function(regs){
+            regs.forEach(function(r){ try{ r.unregister(); }catch(e){} });
+          }).catch(function(){});
+
+          // Also try the single registration API
+          navigator.serviceWorker.getRegistration().then(function(r){ if(r){ try{ r.unregister(); }catch(e){} } }).catch(function(){});
+
+          // Clear runtime caches if available
+          if (typeof caches !== 'undefined') {
+            caches.keys().then(function(keys){ keys.forEach(function(k){ try{ caches.delete(k); }catch(e){} }); }).catch(function(){});
+          }
+        } catch (e) {
+          // swallow errors — this is a safety net for devices where SW APIs behave differently
+        }
+      }
+    })();
+  </script>
 </body>
 
 </html>
