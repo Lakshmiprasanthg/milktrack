@@ -9,6 +9,7 @@ export const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -85,6 +86,19 @@ export const CustomersPage = () => {
     }
   };
 
+  const filteredCustomers = customers.filter((customer) => {
+    const query = searchTerm.trim().toLowerCase();
+
+    if (!query) {
+      return true;
+    }
+
+    return (
+      customer.name?.toLowerCase().includes(query)
+      || customer.cdNumber?.toLowerCase().includes(query)
+    );
+  });
+
   if (loading) {
     return <LoadingScreen title="Loading customer profiles" subtitle="Pulling addresses, pricing, and contact records into the directory." />;
   }
@@ -103,12 +117,41 @@ export const CustomersPage = () => {
       </div>
 
       <Card>
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="page-title text-2xl">Customer Directory</h2>
-            <p className="page-subtitle text-sm">Total customers: {customers.length}</p>
+            <p className="page-subtitle text-sm">
+              Showing {filteredCustomers.length} of {customers.length} customers
+            </p>
           </div>
-          <span className="chip chip-info">Live CRUD</span>
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-end sm:justify-end lg:w-auto">
+            <div className="w-full sm:min-w-[22rem] lg:w-[24rem]">
+              <label className="mb-1.5 block text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[var(--text-muted)]">
+                Search customers
+              </label>
+              <div className="flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--panel-soft)] px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition focus-within:border-[var(--primary)] focus-within:bg-white focus-within:shadow-[0_18px_40px_rgba(14,165,233,0.12)]">
+                <span className="text-base text-[var(--text-muted)]" aria-hidden="true">⌕</span>
+                <input
+                  type="search"
+                  placeholder="Name or CD number"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-transparent text-sm font-medium text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="rounded-full px-2 py-1 text-xs font-bold text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
+                    aria-label="Clear search"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+            <span className="chip chip-info self-start sm:self-end">Live CRUD</span>
+          </div>
         </div>
         <Table
           columns={[
@@ -130,7 +173,7 @@ export const CustomersPage = () => {
             { key: 'address', label: 'Address' },
             { key: 'pricePerLitre', label: 'Price/L (₹)' },
           ]}
-          data={customers}
+          data={filteredCustomers}
           onEdit={handleOpenModal}
           onDelete={handleDelete}
           emptyState={
@@ -138,8 +181,14 @@ export const CustomersPage = () => {
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--panel-soft)] text-2xl text-[var(--primary)]">
                 👤
               </div>
-              <p className="text-base font-semibold text-[var(--text)]">No customers added yet</p>
-              <p className="text-sm leading-6 text-[var(--text-muted)]">Create a customer profile to begin recording deliveries and billing accurately.</p>
+              <p className="text-base font-semibold text-[var(--text)]">
+                {searchTerm.trim() ? 'No matching customers found' : 'No customers added yet'}
+              </p>
+              <p className="text-sm leading-6 text-[var(--text-muted)]">
+                {searchTerm.trim()
+                  ? 'Try searching with a different name or CD number.'
+                  : 'Create a customer profile to begin recording deliveries and billing accurately.'}
+              </p>
               <Button onClick={() => handleOpenModal()} variant="primary" className="mt-2">
                 Add First Customer
               </Button>

@@ -90,15 +90,22 @@ const createDelivery = async (req, res, next) => {
 
     const normalizedDate = normalizeDate(date);
 
-    // Check for duplicate
     const existingDelivery = await Delivery.findOne({
       customerId,
       date: normalizedDate,
     });
 
     if (existingDelivery) {
-      res.status(409);
-      return next(new Error('Delivery already exists for this customer on this date'));
+      existingDelivery.quantity += Number(quantity);
+      existingDelivery.delivered = existingDelivery.delivered || Boolean(delivered);
+      await existingDelivery.save();
+      await existingDelivery.populate('customerId', 'name phone pricePerLitre');
+
+      res.status(200).json({
+        success: true,
+        data: existingDelivery,
+      });
+      return;
     }
 
     const delivery = new Delivery({
