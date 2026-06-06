@@ -151,7 +151,7 @@ export const ReportsPage = () => {
 
       <div className="mt-8 text-center text-sm text-[var(--text-muted)]">
         <p>
-          Click "Edit" to download individual customer PDF bills
+          Click "Bill" to download individual customer PDF bills
         </p>
       </div>
     </MainLayout>

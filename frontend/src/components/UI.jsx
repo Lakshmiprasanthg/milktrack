@@ -157,7 +157,7 @@ export const Table = ({ columns, data, onEdit, onDelete, onToggle, emptyState })
                         className="chip chip-ghost transition-transform duration-150 hover:-translate-y-0.5 hover:bg-slate-100"
                         style={{ minHeight: '32px' }}
                       >
-                        Edit
+                        Bill
                       </button>
                     )}
                     {onDelete && (

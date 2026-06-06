@@ -29,16 +29,29 @@ const StatCard = ({ label, value, sub, accent }) => (
 );
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
-const StatusBadge = ({ delivered }) =>
-  delivered ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600">
-      ✅ Delivered
-    </span>
-  ) : (
+const StatusBadge = ({ status }) => {
+  if (status === 'delivered') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+        ✅ Delivered
+      </span>
+    );
+  }
+
+  if (status === 'pending') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-600">
+        ⏳ Pending
+      </span>
+    );
+  }
+
+  return (
     <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-2 py-0.5 text-xs font-semibold text-rose-500">
       ❌ Missed
     </span>
   );
+};
 
 // ─── Custom bar tooltip ───────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
@@ -359,7 +372,7 @@ export const CustomerProfilePage = () => {
                       })}
                     </td>
                     <td className="py-2.5">
-                      <StatusBadge delivered={d.delivered} />
+                      <StatusBadge status={d.status ?? (d.delivered ? 'delivered' : 'missed')} />
                     </td>
                     <td className="py-2.5 text-right text-[var(--text)] text-sm">
                       {d.delivered ? `${d.quantity}L` : '—'}

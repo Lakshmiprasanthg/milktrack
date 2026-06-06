@@ -164,6 +164,8 @@ const getCustomerReport = async (req, res, next) => {
     const monthRange = getMonthRange(month);
     const { year, month: monthNum, start, end } = monthRange;
     const daysInMonth = getDaysInMonth(year, monthNum);
+    const today = new Date();
+    const todayUtc = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
     // Fetch all deliveries for this customer in the month
     const deliveries = await Delivery.find({
@@ -199,14 +201,18 @@ const getCustomerReport = async (req, res, next) => {
           date: dateStr,
           quantity: d.quantity,
           delivered: true,
+          status: 'delivered',
           amount,
         });
       } else {
+        const dayDate = new Date(Date.UTC(year, monthNum - 1, day));
+
         daily.push({
           day,
           date: dateStr,
           quantity: d ? d.quantity : 0,
           delivered: false,
+          status: dayDate > todayUtc ? 'pending' : 'missed',
           amount: 0,
         });
       }
