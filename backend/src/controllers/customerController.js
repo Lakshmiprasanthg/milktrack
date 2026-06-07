@@ -1,4 +1,5 @@
 const Customer = require('../models/Customer');
+const Delivery = require('../models/Delivery');
 
 const isDuplicateKeyError = (error) => error?.code === 11000;
 
@@ -143,7 +144,8 @@ const deleteCustomer = async (req, res, next) => {
       return next(new Error('Forbidden'));
     }
 
-    await customer.remove();
+    await Delivery.deleteMany({ customerId: id });
+    await customer.deleteOne();
 
     res.status(200).json({
       success: true,

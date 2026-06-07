@@ -76,16 +76,16 @@ export const DashboardPage = () => {
   };
 
   const customerCatalog = customers
-    .filter((customer) => customer.cdNumber)
+    .filter((customer) => customer.cdNumber !== null && customer.cdNumber !== undefined && customer.cdNumber !== '')
     .map((customer) => ({
       ...customer,
-      code: customer.cdNumber,
+      code: String(customer.cdNumber),
     }));
 
   const selectedCustomer = customerCatalog.find((customer) => {
     const normalizedInput = customerCode.trim().toLowerCase();
     return (
-      customer.code.toLowerCase() === normalizedInput
+      String(customer.code).toLowerCase() === normalizedInput
       || customer.name.toLowerCase() === normalizedInput
       || customer.phone.toLowerCase() === normalizedInput
     );

@@ -26,7 +26,7 @@ router.get(
 router.post(
   '/',
   [
-    body('cdNumber').trim().notEmpty(),
+    body('cdNumber').trim().notEmpty().isNumeric(),
     body('name').trim().notEmpty(),
     body('phone').trim().notEmpty(),
     body('address').trim().notEmpty(),
@@ -40,7 +40,7 @@ router.put(
   '/:id',
   [
     param('id').isMongoId(),
-    body('cdNumber').trim().notEmpty(),
+    body('cdNumber').trim().notEmpty().isNumeric(),
     body('name').trim().notEmpty(),
     body('phone').trim().notEmpty(),
     body('address').trim().notEmpty(),

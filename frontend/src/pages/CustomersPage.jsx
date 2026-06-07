@@ -39,7 +39,7 @@ export const CustomersPage = () => {
     if (customer) {
       setEditingId(customer._id);
       setFormData({
-        cdNumber: customer.cdNumber || '',
+        cdNumber: customer.cdNumber ?? '',
         name: customer.name,
         phone: customer.phone,
         address: customer.address,
@@ -95,7 +95,7 @@ export const CustomersPage = () => {
 
     return (
       customer.name?.toLowerCase().includes(query)
-      || customer.cdNumber?.toLowerCase().includes(query)
+      || String(customer.cdNumber ?? '').toLowerCase().includes(query)
     );
   });
 
@@ -155,7 +155,7 @@ export const CustomersPage = () => {
         </div>
         <Table
           columns={[
-            { key: 'cdNumber', label: 'CD Number', render: (code) => code || 'Not Set' },
+            { key: 'cdNumber', label: 'CD Number', render: (code) => (code ?? 'Not Set') },
             {
               key: 'name',
               label: 'Name',
@@ -215,7 +215,9 @@ export const CustomersPage = () => {
         <form className="grid gap-4 sm:grid-cols-2">
           <Input
             label="CD Number"
-            placeholder="CD-1001"
+            type="number"
+            inputMode="numeric"
+            placeholder="1001"
             value={formData.cdNumber}
             onChange={(e) => setFormData({ ...formData, cdNumber: e.target.value })}
             required
