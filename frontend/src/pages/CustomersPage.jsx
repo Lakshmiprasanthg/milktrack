@@ -249,7 +249,7 @@ export const CustomersPage = () => {
                 required
               />
             </div>
-            <p className="text-xs text-[var(--text-muted)]">Enter 10 digit mobile number (country code +91 enforced)</p>
+            <p className="text-xs text-[var(--text-muted)]">Enter 10 digit mobile number </p>
           </div>
           <Input
             label="Address"
