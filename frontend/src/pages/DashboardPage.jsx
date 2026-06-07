@@ -84,10 +84,12 @@ export const DashboardPage = () => {
 
   const selectedCustomer = customerCatalog.find((customer) => {
     const normalizedInput = customerCode.trim().toLowerCase();
+    const inputDigits = normalizedInput.replace(/\D/g, '');
+    const customerPhoneDigits = String(customer.phone ?? '').replace(/\D/g, '');
     return (
       String(customer.code).toLowerCase() === normalizedInput
       || customer.name.toLowerCase() === normalizedInput
-      || customer.phone.toLowerCase() === normalizedInput
+      || (inputDigits && customerPhoneDigits === inputDigits)
     );
   });
 

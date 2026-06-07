@@ -28,7 +28,7 @@ router.post(
   [
     body('cdNumber').trim().notEmpty().isNumeric(),
     body('name').trim().notEmpty(),
-    body('phone').trim().notEmpty(),
+      body('phone').trim().notEmpty().matches(/^\+?[0-9\s-]{7,20}$/).withMessage('Phone must contain only digits, spaces, hyphens and optional leading +'),
     body('address').trim().notEmpty(),
     body('pricePerLitre').isFloat({ min: 0 }),
   ],
@@ -42,7 +42,7 @@ router.put(
     param('id').isMongoId(),
     body('cdNumber').trim().notEmpty().isNumeric(),
     body('name').trim().notEmpty(),
-    body('phone').trim().notEmpty(),
+      body('phone').trim().notEmpty().matches(/^\+?[0-9\s-]{7,20}$/).withMessage('Phone must contain only digits, spaces, hyphens and optional leading +'),
     body('address').trim().notEmpty(),
     body('pricePerLitre').isFloat({ min: 0 }),
   ],

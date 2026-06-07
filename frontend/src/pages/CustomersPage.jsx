@@ -232,9 +232,10 @@ export const CustomersPage = () => {
           <Input
             label="Phone"
             type="tel"
+            inputMode="tel"
             placeholder="+91-9876543210"
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9+\s-]/g, '') })}
             required
           />
           <Input
