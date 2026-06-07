@@ -43,7 +43,15 @@ const getCustomerById = async (req, res, next) => {
 
 const createCustomer = async (req, res, next) => {
   try {
-    const { cdNumber, name, phone, address, pricePerLitre } = req.body;
+    let { cdNumber, name, phone, address, pricePerLitre } = req.body;
+
+    // normalize phone to +91XXXXXXXXXX if possible
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (digits.length === 10) {
+      phone = `+91${digits}`;
+    } else if (digits.length === 12 && digits.startsWith('91')) {
+      phone = `+${digits}`;
+    }
 
     const existingCustomer = await Customer.findOne({
       owner: req.admin._id,
@@ -82,7 +90,15 @@ const createCustomer = async (req, res, next) => {
 const updateCustomer = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { cdNumber, name, phone, address, pricePerLitre } = req.body;
+    let { cdNumber, name, phone, address, pricePerLitre } = req.body;
+
+    // normalize phone to +91XXXXXXXXXX if possible
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (digits.length === 10) {
+      phone = `+91${digits}`;
+    } else if (digits.length === 12 && digits.startsWith('91')) {
+      phone = `+${digits}`;
+    }
 
     const customer = await Customer.findById(id);
 
