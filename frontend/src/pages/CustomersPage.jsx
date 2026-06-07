@@ -236,6 +236,14 @@ export const CustomersPage = () => {
             placeholder="+91-9876543210"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9+\s-]/g, '') })}
+            onBlur={() => {
+              const digits = String(formData.phone || '').replace(/\D/g, '');
+              if (digits.length === 10) {
+                setFormData({ ...formData, phone: `+91${digits}` });
+              } else if (digits.length === 12 && digits.startsWith('91')) {
+                setFormData({ ...formData, phone: `+${digits}` });
+              }
+            }}
             required
           />
           <Input
