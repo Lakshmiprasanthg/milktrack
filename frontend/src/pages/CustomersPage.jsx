@@ -41,7 +41,7 @@ export const CustomersPage = () => {
       setFormData({
         cdNumber: customer.cdNumber ?? '',
         name: customer.name,
-        phone: customer.phone,
+        phone: customer.phone ? String(customer.phone).replace(/\D/g, '').slice(-10) : '',
         address: customer.address,
         pricePerLitre: customer.pricePerLitre,
       });
@@ -60,11 +60,16 @@ export const CustomersPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...formData,
+        phone: formData.phone ? `+91${String(formData.phone).replace(/\D/g, '').slice(-10)}` : formData.phone,
+      };
+
       if (editingId) {
-        await customerApi.update(editingId, formData);
+        await customerApi.update(editingId, payload);
         toast.success('Customer updated successfully');
       } else {
-        await customerApi.create(formData);
+        await customerApi.create(payload);
         toast.success('Customer created successfully');
       }
       fetchCustomers();
@@ -229,23 +234,23 @@ export const CustomersPage = () => {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
           />
-          <Input
-            label="Phone"
-            type="tel"
-            inputMode="tel"
-            placeholder="+91-9876543210"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9+\s-]/g, '') })}
-            onBlur={() => {
-              const digits = String(formData.phone || '').replace(/\D/g, '');
-              if (digits.length === 10) {
-                setFormData({ ...formData, phone: `+91${digits}` });
-              } else if (digits.length === 12 && digits.startsWith('91')) {
-                setFormData({ ...formData, phone: `+${digits}` });
-              }
-            }}
-            required
-          />
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <label className="text-xs sm:text-sm font-semibold tracking-wide text-slate-700">Phone</label>
+            <div className="flex">
+              <span className="inline-flex items-center rounded-l-md border border-r-0 border-[var(--border)] bg-[var(--panel-soft)] px-3 py-2 text-sm">+91</span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                placeholder="9123456789"
+                className="input-surface rounded-l-none flex-1"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+                required
+              />
+            </div>
+            <p className="text-xs text-[var(--text-muted)]">Enter 10 digit mobile number (country code +91 enforced)</p>
+          </div>
           <Input
             label="Address"
             placeholder="Customer address"
